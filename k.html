@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>k</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var graphics, angle = 0
+      var font, sound
+      var letter = 'k', letterSize = 400
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/libre-baskerville-regular.ttf")
+        sound = loadSound("assets/sounds/ketsa-slow-rising.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight, WEBGL)
+
+        graphics = createGraphics(400, 400)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+      }
+
+      function draw() {
+        background(0)
+
+        var level = amplitude.getLevel()
+
+        // graphics.background(0)
+        graphics.translate(graphics.width/2, graphics.height/2)
+        graphics.stroke(255)
+        graphics.fill(255)
+        graphics.textFont(font)
+        graphics.textAlign(CENTER, CENTER)
+        graphics.textSize(150)
+        graphics.text('k', 0, 0)
+        // graphics.line(0, graphics.height/2, graphics.width, graphics.height/2)
+        // graphics.line(graphics.width/2, 0, graphics.width/2, graphics.height)
+        // for (var i = 0; i < points.length; i++) {
+        //   var point = points[i]
+        // }
+
+        noStroke()
+        ambientLight(100)
+        directionalLight(255, 255, 255, 1, -1, 0)
+        orbitControl()
+        rotateX(angle * 0.2)
+        rotateY(angle * 0.3)
+        rotateZ(angle * 0.4)
+        texture(graphics)
+        sphere(300)
+
+        angle += 0.01
+      }
+
+      // function mousePressed() {
+      //   if (!sound.isPlaying()) {
+      //     // sound.play()
+      //   } else {
+      //     // save()
+      //   }
+      // }
+    </script>
+  </body>
+</html>

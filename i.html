@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>i</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'i', letterSize = 700
+      var points
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/libre-baskerville-regular.ttf")
+        sound = loadSound("assets/sounds/ascent.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+        dot = points.slice(0, 121)
+        stem = points.slice(122)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+
+        // shuffleArray(dot)
+        shuffleArray(stem)
+
+      }
+
+      function draw() {
+        background(255, 10)
+        strokeWeight(0.25)
+
+        var level = amplitude.getLevel()
+
+        noFill()
+      
+        curveTightness(tan(frameCount * 0.01) * (100 + level * 200))
+
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+        beginShape()
+        for (var i = 0; i < dot.length; i++) {
+          var point = dot[i]
+          curveVertex(point.x, point.y) 
+        }
+        endShape(CLOSE)
+        beginShape()
+        for (var i = 0; i < stem.length - 1; i++) {
+          var point = stem[i]
+          curveVertex(point.x, point.y)
+        }
+        endShape(CLOSE)
+      }
+
+      function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+          var j = floor(random() * (i + 1))
+          var temp = array[i]
+          array[i] = array[j]
+          array[j] = temp
+        }
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+            save()
+        }
+      }
+    </script>
+  </body>
+</html>

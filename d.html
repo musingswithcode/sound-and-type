@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>d</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'd', letterSize = 700
+      var points
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/libre-baskerville-regular.ttf")
+        sound = loadSound("assets/sounds/space-orbit.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+        outerPoints = points.slice(0, 210)
+        innerPoints = points.slice(211)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+      }
+
+      function draw() {
+        background(255, 50)
+
+        // noFill()
+        // stroke(0)
+        // strokeWeight(3)
+
+        //fill(0)
+        //noStroke()
+        stroke(0)
+        noFill()
+        strokeWeight(2)
+
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+
+        var level = amplitude.getLevel()
+        var offset = map(level, 0, 0.1, 0, 50)
+
+        beginShape()
+        for (var i = 0; i < outerPoints.length; i++) {
+          var point = outerPoints[i]
+          vertex(point.x + cos((i + frameCount)/10) * offset, point.y)
+        }
+        endShape(CLOSE)
+
+        //fill(255)
+        noFill()
+        beginShape()
+        for (var i = 0; i < innerPoints.length; i++) {
+          var point = innerPoints[i]
+          vertex(point.x + sin((i + frameCount)/10) * offset, point.y)
+        }
+        endShape(CLOSE)
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+          save()
+        }
+      }
+
+    </script>
+  </body>
+</html>

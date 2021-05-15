@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>j</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'j', letterSize = 600
+      var points, pointsInLine = {}
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/libre-baskerville-regular.ttf")
+        sound = loadSound("assets/sounds/ketsa-slow-rising.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+
+        for (var i = 0; i < points.length; i++) {
+          var point = points[i]
+          point.x = point.x + width/2 - bounds.w/2
+          point.y = Math.ceil((point.y + height/2 + bounds.h/2 - 200) / 10) * 10
+        }
+
+        for (var y = 0; y <= height; y += 10) {
+          pointsInLine[y] = points
+            .filter(point => point.y === y)
+            .sort((a, b) => a.x - b.x)
+        }
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+        // noLoop()
+      }
+
+      function draw() {
+        background(255, 20)
+        noFill()
+        strokeWeight(0.25)
+        stroke(0)
+
+        var level = amplitude.getLevel()
+
+        var x
+        for (var y = 0; y <= height; y += 10) {
+          var dots = pointsInLine[y]
+          if (dots.length !== 0) {
+            beginShape()
+            for (var x = width * 0.33; x <= dots[0].x; x += 10) {
+              vertex(x, y + noise(x * 0.05 + frameCount * 0.03 + y * 0.01) * 15)
+            }
+            for (var i = 0; i < dots.length - 1; i++) {
+              var point1 = dots[i]
+              var point2 = dots[i + 1]
+
+              x = point1.x + (point2.x - point1.x) * 1/4
+              vertex(x, y - 50 / (1 + pow(x - width/2, 4) / 8e6) * noise(x/10 + frameCount/50 + y) + sin(x/10 + y/20 + frameCount/30) * level * 200)
+              x = point1.x + (point2.x - point1.x) * 2/4
+              vertex(x, y - 50 / (1 + pow(x - width/2, 4) / 8e6) * noise(x/10 + frameCount/50 + y) + cos(x/10 + y/20 + frameCount/30) * level * 200)
+              x = point1.x + (point2.x - point1.x) * 3/4
+              vertex(x, y - 50 / (1 + pow(x - width/2, 4) / 8e6) * noise(x/10 + frameCount/50 + y) + sin(x/10 + y/20 + frameCount/30) * level * 200)
+            }
+            for (var x = dots[dots.length - 1].x; x <= width * 0.66; x += 10) {
+              vertex(x, y + noise(x * 0.05 + frameCount * 0.03 + y * 0.01) * 15)
+            }
+            endShape()
+          }
+        }
+
+        // for (var i = 0; i < points.length; i++) {
+        //   var point = points[i]
+        //   circle(point.x, point.y, 2)
+        // }
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+            save()
+        }
+      }
+    </script>
+  </body>
+</html>

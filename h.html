@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>h</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'f', letterSize = 700
+      var points
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/crimsontext-regular.ttf")
+        sound = loadSound("assets/sounds/flower-bed.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+        rectMode(CENTER)
+        textAlign(CENTER, CENTER)
+      }
+
+      function draw() {
+        background(255, 10)
+
+        var level = amplitude.getLevel()
+        translate(width/2, height/2)
+        for (var i = 20; i >= 0; i--) {
+          var angle = i * level * 0.5
+          var color = i % 2 === 0 ? 0 : 255
+          var size  = 250 + i * 20 + level * 1000
+          push()
+          rotate(angle)
+          //fill(color)
+          noFill()
+          stroke(color)
+          textSize(size)
+          text(letter, 0, 0)
+          pop()
+        }
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+            save()
+        }
+      }
+    </script>
+  </body>
+</html>

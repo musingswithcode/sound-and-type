@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>b</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var bgImg
+      var letter = 'b', letterSize = 700
+      var points
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/delagothicone-regular.ttf")
+        sound = loadSound("assets/sounds/vivaldi-concerto.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+        points = points.slice(0, 213)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+        rectMode(CENTER)
+
+        sound.play()
+      }
+
+      function draw() {
+        background(255)
+
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+
+        var level = amplitude.getLevel()
+        var sw = map(level, 0, 0.1, 0.5, 1)
+        noFill()
+        stroke(0)
+        strokeWeight(sw)
+        strokeJoin(BEVEL)
+
+        beginShape(TRIANGLE_FAN)
+        for (var i = 0; i < points.length; i++) {
+          var point = points[i]
+          var o = map(level, 0, 0.1, 30, 120)
+          var n = noise(i * 0.3) * o
+          vertex(point.x + n, point.y + n)
+        }
+        endShape(CLOSE)
+
+        points.push(points.shift())
+      }
+
+      function mousePressed() {
+        save()
+      }
+    </script>
+  </body>
+</html>

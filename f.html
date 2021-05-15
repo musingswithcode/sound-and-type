@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>f</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'f', letterSize = 700
+      var points
+      var amplitude
+
+      var particles = []
+
+      function preload() {
+        font  = loadFont("assets/fonts/crimsontext-regular.ttf")
+        sound = loadSound("assets/sounds/enchanted-forest.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize, {
+          sampleFactor: 3
+        })
+
+        particles = new Array(points.length)
+        for (var i = 0; i < particles.length; i++) {
+          var point = points[i]
+          particles[i] = new Particle(point)
+        }
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+      }
+
+      function draw() {
+        background(255, 8)
+
+        // stroke("#FFB700")
+
+        var level = amplitude.getLevel()
+
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+        // for (var i = 0; i < points.length; i++) {
+        //   var point = points[i]
+        //   circle(point.x, point.y, 2)
+        // }
+        for (var i = 0; i < particles.length; i++) {
+          var particle = particles[i]
+          particle.update(level)
+          particle.draw(level)
+        }
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+          // save()
+        }
+      }
+
+      function Particle({ x, y, alpha }) {
+        this.x = x
+        this.y = y
+        this.alpha = alpha
+
+        this.position = createVector(x, y)
+        this.velocity = p5.Vector.fromAngle(radians(alpha))
+        this.previous = this.position.copy()
+
+        this.update = function(level) {
+          if (frameCount % 100 === 0) {
+            this.position = createVector(this.x, this.y)
+            this.velocity = p5.Vector.fromAngle(radians(this.alpha))
+            this.previous = this.position.copy()
+          } else {
+            this.previous = this.position
+
+            this.velocity.add(p5.Vector.fromAngle(noise(this.position.x * 0.001, this.position.y * 0.001, frameCount * 0.001) * 360))
+            this.velocity.setMag(level * 25)
+
+            this.position.add(this.velocity)
+          }
+        }
+
+        this.draw = function(level) {
+          line(this.position.x, this.position.y, this.previous.x, this.previous.y)
+        }
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        } else {
+          save()
+        }
+      }
+    </script>
+  </body>
+</html>

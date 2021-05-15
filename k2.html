@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>k</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'k', letterSize = 700
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/libre-baskerville-regular.ttf")
+        sound = loadSound("assets/sounds/tumbleweeds.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+      }
+
+      function draw() {
+        background(255)
+
+        var level = amplitude.getLevel()
+        var factor = map(level, 0, 0.1, 0, 20)
+
+        fill(0)
+        stroke(0)
+        strokeWeight(0.2)
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+        beginShape(TRIANGLES)
+        for(var i = 0; i < points.length; i += 1) {
+          var point = points[i]
+          var x = point.x + sin(point.y * 0.1 + frameCount * 0.1) * factor
+          var y = point.y + cos(point.x * 0.1 + frameCount * 0.1) * factor
+          vertex(x, y)
+        }
+        endShape(CLOSE)
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        }
+        else {
+          save()
+        }
+      }
+    </script>
+  </body>
+</html>

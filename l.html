@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>l</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.2.0/addons/p5.sound.min.js"></script>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      var font, sound
+      var letter = 'l', letterSize = 700
+      var amplitude
+
+      function preload() {
+        font  = loadFont("assets/fonts/pacifico-regular.ttf")
+        sound = loadSound("assets/sounds/autumn.mp3")
+      }
+
+      function setup() {
+        createCanvas(windowWidth, windowHeight)
+
+        bounds = font.textBounds(letter, 0, 0, letterSize)
+        points = font.textToPoints(letter, 0, 0, letterSize)
+        outer = points.slice(0, 190)
+        inner = points.slice(191)
+
+        amplitude = new p5.Amplitude()
+
+        frameRate(20)
+      }
+
+      function draw() {
+        background(255, 120)
+
+        var level = amplitude.getLevel()
+        var factor = map(level, 0, 0.1, 0, 50)
+
+        noFill()
+        translate(width/2 - bounds.w/2, height/2 + bounds.h/2)
+        beginShape()
+        for(var i = 0; i < outer.length; i += 1) {
+          var point = outer[i]
+          var x = point.x + sin(point.x * 0.1 + point.y * 0.5 + frameCount * 0.1) * factor
+          var y = point.y + cos(point.x * 0.1 - point.y * 0.5 + frameCount * 0.1) * factor
+          curveVertex(x, y)
+        }
+        endShape(CLOSE)
+
+        beginShape()
+        for(var i = 0; i < inner.length; i += 1) {
+          var point = inner[i]
+          var x = point.x + sin(point.x * 0.1 + point.y * 0.5 + frameCount * 0.1) * factor
+          var y = point.y + cos(point.x * 0.1 - point.y * 0.5 + frameCount * 0.1) * factor
+          curveVertex(x, y)
+        }
+        endShape(CLOSE)
+      }
+
+      function mousePressed() {
+        if (!sound.isPlaying()) {
+          sound.play()
+        }
+      }
+    </script>
+  </body>
+</html>
